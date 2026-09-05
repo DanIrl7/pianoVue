@@ -1593,6 +1593,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from "vue";
+import * as Tone from "tone";
 
 // ************** TWO-ROW PIANO KEYBOARD ENGINE **************
 // NO SHIFT REQUIRED! Plays chords across multiple octaves with both hands!
@@ -1971,12 +1972,8 @@ const isNoteInActiveChord = (noteName) => {
   return activeHighlightChord.value.displayNotes.includes(noteName);
 };
 
-// Play complete chord simultaneously (with subtle natural arpeggio strum)
 const playChord = (chord) => {
-  initAudioContext();
-  if (audioContext && audioContext.state === "suspended") {
-    audioContext.resume();
-  }
+  initToneAudio();
 
   chord.soundNotes.forEach((note, index) => {
     setTimeout(() => {
@@ -1985,65 +1982,86 @@ const playChord = (chord) => {
   });
 };
 
-// ************** AUDIO ENGINE **************
-const frequencyMap = {
-  C: 261.63,
-  "C#": 277.18,
-  D: 293.66,
-  "D#": 311.13,
-  E: 329.63,
-  F: 349.23,
-  "F#": 369.99,
-  G: 392.0,
-  "G#": 415.3,
-  A: 440.0,
-  "A#": 466.16,
-  B: 493.88,
-};
+// ************** TONE.JS AUDIO ENGINE **************
+let pianoSampler = null;
+let pianoSynth = null;
+let isToneStarted = false;
 
-let audioContext = null;
+const initToneAudio = async () => {
+  if (!isToneStarted) {
+    await Tone.start();
+    isToneStarted = true;
+  }
 
-const initAudioContext = () => {
-  if (!audioContext) {
-    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  if (!pianoSynth) {
+    // Rich polyphonic synthesizer for immediate, zero-latency response
+    pianoSynth = new Tone.PolySynth(Tone.Synth, {
+      volume: -4,
+      oscillator: { type: "triangle8" },
+      envelope: {
+        attack: 0.005,
+        decay: 1.8,
+        sustain: 0.15,
+        release: 1.4,
+      },
+    }).toDestination();
+  }
+
+  if (!pianoSampler) {
+    // Official Tone.js Salamander Grand Piano acoustic soundfont
+    pianoSampler = new Tone.Sampler({
+      urls: {
+        A0: "A0.mp3",
+        C1: "C1.mp3",
+        "D#1": "Ds1.mp3",
+        "F#1": "Fs1.mp3",
+        A1: "A1.mp3",
+        C2: "C2.mp3",
+        "D#2": "Ds2.mp3",
+        "F#2": "Fs2.mp3",
+        A2: "A2.mp3",
+        C3: "C3.mp3",
+        "D#3": "Ds3.mp3",
+        "F#3": "Fs3.mp3",
+        A3: "A3.mp3",
+        C4: "C4.mp3",
+        "D#4": "Ds4.mp3",
+        "F#4": "Fs4.mp3",
+        A4: "A4.mp3",
+        C5: "C5.mp3",
+        "D#5": "Ds5.mp3",
+        "F#5": "Fs5.mp3",
+        A5: "A5.mp3",
+        C6: "C6.mp3",
+        "D#6": "Ds6.mp3",
+        "F#6": "Fs6.mp3",
+        A6: "A6.mp3",
+        C7: "C7.mp3",
+        "D#7": "Ds7.mp3",
+        "F#7": "Fs7.mp3",
+        A7: "A7.mp3",
+        C8: "C8.mp3",
+      },
+      release: 1.2,
+      baseUrl: "https://tonejs.github.io/audio/salamander/",
+    }).toDestination();
   }
 };
 
 const playNote = (noteName, octave) => {
-  initAudioContext();
-  if (audioContext && audioContext.state === "suspended") {
-    audioContext.resume();
+  initToneAudio();
+
+  const noteWithOctave = `${noteName}${octave}`;
+
+  try {
+    if (pianoSampler && pianoSampler.loaded) {
+      pianoSampler.triggerAttackRelease(noteWithOctave, "2n");
+    } else if (pianoSynth) {
+      pianoSynth.triggerAttackRelease(noteWithOctave, "2n");
+    }
+  } catch (e) {
+    console.warn("Tone audio error:", e);
   }
-
-  const baseFrequency = frequencyMap[noteName];
-  if (!baseFrequency) return;
-
-  const frequency = baseFrequency * Math.pow(2, octave - 4);
-
-  const osc = audioContext.createOscillator();
-  const gain = audioContext.createGain();
-
-  osc.frequency.value = frequency;
-  osc.type = "triangle";
-
-  const now = audioContext.currentTime;
-  const attackTime = 0.01;
-  const decayTime = 0.1;
-  const sustainLevel = 0.2;
-  const releaseTime = 0.3;
-  const totalDuration = 0.55;
-
-  gain.gain.setValueAtTime(0, now);
-  gain.gain.linearRampToValueAtTime(0.35, now + attackTime);
-  gain.gain.linearRampToValueAtTime(sustainLevel, now + attackTime + decayTime);
-  gain.gain.setValueAtTime(sustainLevel, now + (totalDuration - releaseTime));
-  gain.gain.linearRampToValueAtTime(0, now + totalDuration);
-
-  osc.connect(gain);
-  gain.connect(audioContext.destination);
-
-  osc.start(now);
-  osc.stop(now + totalDuration);
 };
 
 // ************** KEYBOARD LISTENER (CASE-INSENSITIVE / NO SHIFT) **************
@@ -2091,7 +2109,7 @@ const changeOctave = (direction) => {
 
 onMounted(() => {
   generateNotes();
-  initAudioContext();
+  initToneAudio();
 
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
