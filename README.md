@@ -2,7 +2,7 @@
 
 A brutalist-designed, web-based virtual piano with polyphonic keyboard support, chord library, and professional-grade audio synthesis powered by **Tone.js** and **Vue 3**.
 
-**Live Demo:** [localhost:5173](http://localhost:5173)
+**Live Demo:** https://pianovue.vercel.app/
 
 ---
 
@@ -54,15 +54,6 @@ Bottom Row (White Keys):  Z  X  C  V  B  N  M  ,  .  /
 - **Salamander Grand Piano** acoustic soundfont (optional fallback)
 - Realistic piano envelope (attack, decay, sustain, release)
 - Smooth fade-out to prevent audio clicking
-
-### **Design**
-
-- **Brutalist industrial aesthetic** with heavy borders and raw typography
-- Monospace fonts (Space Mono, JetBrains Mono, Anton)
-- Color scheme: #3C1950 (deep purple) + #F0CDD2 (soft rose) on raw backgrounds
-- Responsive layout with hard shadows and sharp edges
-
----
 
 ## 🚀 Getting Started
 
@@ -311,36 +302,6 @@ npm run preview
 
 ---
 
-## 📱 Responsive Design
-
-- **Desktop (1200px+):** Full layout with side-by-side controls
-- **Tablet (768px–1199px):** Stacked layout, pinned chords scroll horizontally
-- **Mobile (< 768px):** Optimized touch interactions, vertical scrolling
-
----
-
-## 🚀 Future Enhancements
-
-### Phase 4 (Planned)
-
-- [ ] Volume slider with real-time control
-- [ ] Waveform selector (sine, square, sawtooth, triangle)
-- [ ] Recording and playback
-- [ ] Preset save/load system
-- [ ] MIDI file import/export
-- [ ] Metronome with tempo control
-
-### Phase 5 (Aspirational)
-
-- [ ] Reverb and effects (via Tone.js effects)
-- [ ] Multiple instrument voices (strings, synth, etc.)
-- [ ] Drum pads for percussion
-- [ ] Sheet music visualization
-- [ ] Multiplayer jam sessions (WebSockets)
-- [ ] Mobile app version (React Native)
-
----
-
 ## 📖 Learning Resources
 
 - **Tone.js Documentation:** https://tonejs.github.io/
@@ -350,16 +311,6 @@ npm run preview
 
 ---
 
-## 🤝 Contributing
-
-Found a bug or have a feature request?
-
-1. Test in the latest version
-2. Check for existing issues
-3. Provide clear reproduction steps
-4. Submit a pull request with improvements
-
----
 
 ## 📄 License
 
@@ -398,23 +349,7 @@ This project is open-source and available under the **MIT License**.
 - Try refreshing the page
 - Ensure you have enough RAM/CPU available
 
-### "Audio is laggy or glitchy"
 
-- Close other browser tabs/apps consuming resources
-- Try using the PolySynth instead of Sampler
-- Reduce octave range if performance drops
-
----
-
-## 📞 Support
-
-For issues, questions, or feedback:
-
-- Open an issue in your repository
-- Check the Vue 3 & Tone.js documentation
-- Review the code comments in `Piano.vue`
-
----
 
 **Version:** 0.1.0  
 **Last Updated:** September 2026  
