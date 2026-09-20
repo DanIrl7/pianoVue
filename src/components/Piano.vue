@@ -4,7 +4,6 @@
     <div class="piano-header">
       <div class="header-left">
         <div class="piano-label">MAIN-CONSOLE_A1 // DUAL_DECK_PIANO</div>
-        <div class="piano-status">LAYOUT: TWO_ROW_CHORD (NO SHIFT NEEDED)</div>
       </div>
       <div class="header-right">
         <button class="open-chords-btn" @click="openChordModal = true">
@@ -189,7 +188,7 @@
       <div class="octave-controls">
         <button class="ctrl-btn" @click="changeOctave(-1)">◄ LOWER</button>
         <span class="octave-label">
-          TRANSPOSE: {{ octaveShift > 0 ? "+" + octaveShift : octaveShift }} OCT
+          OCTAVE: {{ octaveShift > 0 ? "+" + octaveShift : octaveShift }} OCT
         </span>
         <button class="ctrl-btn" @click="changeOctave(1)">HIGHER ►</button>
         <button v-if="octaveShift !== 0" class="ctrl-btn reset-btn" @click="octaveShift = 0">
